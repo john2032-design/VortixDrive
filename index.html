@@ -5,174 +5,70 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>VortixDrive</title>
 <link rel="icon" href="https://i.ibb.co/qMpqPQBd/4-B09-F1-FD-F347-4-F94-835-B-568-B59-DCAA59.png">
-<!-- Upload.io (keeps your original lib usage) -->
 <script src="https://cdn.jsdelivr.net/npm/@upload.io/upload-js@latest"></script>
-
 <style>
-  /* Theme / variables */
-  :root{
-    --bg-1: #05040b;
-    --bg-2: #081026;
-    --neon-blue: #60a5fa;
-    --neon-purple: #a78bfa;
-    --neon-pink: #ff5ca8;
-    --glass: rgba(10,12,20,0.45);
-    --glass-strong: rgba(10,12,20,0.65);
-    --header-h: 76px; /* used to offset main so header doesn't overlap */
-    --glow: 0 0 30px rgba(96,165,250,0.18), 0 0 80px rgba(167,139,250,0.08);
-    --radius: 20px;
-    --accent: linear-gradient(90deg,var(--neon-blue),var(--neon-purple));
-  }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    color:#dbeafe;
-    background: radial-gradient(1200px 600px at 10% 10%, rgba(96,165,250,0.06), transparent 8%),
-                radial-gradient(800px 400px at 95% 90%, rgba(167,139,250,0.04), transparent 6%),
-                linear-gradient(180deg, var(--bg-1), var(--bg-2));
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    min-height:100vh;
-    /* subtle animated grid */
-    background-image: linear-gradient(transparent 95%, rgba(255,255,255,0.01) 100%),
-                      linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.01) 100%);
-    background-size: 40px 40px, 40px 40px;
-  }
-
-  /* header - fixed so content must offset */
-  header{
-    position:fixed;
-    top:env(safe-area-inset-top);
-    left:0;
-    right:0;
-    height:var(--header-h);
-    display:flex;
-    align-items:center;
-    border-bottom:1px solid rgba(167,139,250,0.06);
-    background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(4,8,20,0.35));
-    padding:12px 18px;
-    backdrop-filter: blur(8px) saturate(140%);
-    z-index:1200;
-    box-shadow: 0 6px 30px rgba(3,6,18,0.6);
-  }
-
-  .container{ max-width:1100px; margin:0 auto; width:100%; display:flex; gap:12px; align-items:center; }
-
-  .logo{
-    display:flex; align-items:center; gap:12px; color:var(--neon-blue); font-weight:800;
-    font-size:1.6rem; text-shadow: 0 0 18px rgba(96,165,250,0.12), 0 0 8px rgba(167,139,250,0.06);
-  }
-  .logo img{ height:42px; width:42px; border-radius:8px; background:linear-gradient(180deg,#07122b,#0b1730); padding:6px; box-shadow:0 6px 30px rgba(96,165,250,0.06) }
-
-  /* content offset so header doesn't overlap (fixes your "messed up" top) */
-  main{ padding-top: calc(var(--header-h) + 28px); padding-bottom:80px; display:flex; justify-content:center; align-items:flex-start; min-height:calc(100vh - var(--header-h)); }
-
-  /* upload card */
-  .upload-box{
-    width: min(760px, 94vw);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius: calc(var(--radius) + 6px);
-    padding: 36px;
-    box-shadow: var(--glow), inset 0 0 40px rgba(12,16,30,0.4);
-    border: 1px solid rgba(96,165,250,0.06);
-    position:relative;
-    overflow:hidden;
-  }
-
-  /* neon rim effect */
-  .upload-box::before{
-    content:"";
-    position:absolute; inset:-2px;
-    background: conic-gradient(from 140deg, rgba(96,165,250,0.06), rgba(167,139,250,0.06), rgba(255,92,168,0.03));
-    filter: blur(20px);
-    z-index:0;
-    pointer-events:none;
-  }
-  .upload-inner{ position:relative; z-index:1; }
-
-  h1{
-    font-size:2.2rem; margin-bottom:6px; letter-spacing:0.6px;
-    background: var(--accent);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  }
-  p.tagline{ color: #9fb4d9; margin-bottom:18px; opacity:0.9}
-
-  /* drop area */
-  .drop-zone{
-    display:flex; align-items:center; justify-content:center; flex-direction:column;
-    gap:10px;
-    border-radius:14px;
-    padding: 46px 18px;
-    border: 2px dashed rgba(96,165,250,0.14);
-    background: linear-gradient(180deg, rgba(10,14,24,0.36), rgba(6,10,18,0.16));
-    transition: all .25s ease;
-    cursor:pointer;
-    box-shadow: 0 8px 40px rgba(12,16,30,0.6);
-    position:relative;
-  }
-  .drop-zone svg{ filter: drop-shadow(0 6px 20px rgba(96,165,250,0.12)); stroke:var(--neon-blue) }
-  .drop-zone .dz-text{ color:#9fb4d9; font-size:1.05rem; opacity:0.95 }
-  .drop-zone .dz-sub{ color: #93a7c3; font-size:0.9rem }
-  .drop-zone.dragover{ transform: translateY(-8px) scale(1.01); border-color: var(--neon-blue); box-shadow: 0 20px 60px rgba(96,165,250,0.14) }
-
-  /* status inside drop zone: keeps events intact (we won't replace innerHTML of drop-zone) */
-  .dz-status{ margin-top:6px; font-size:0.95rem; color:#bcd3ff; opacity:0.9 }
-
-  /* controls */
-  .controls{ margin-top:20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  select, .btn{
-    padding:12px 14px; border-radius:12px; border:none; font-size:1rem; outline:none;
-    background: rgba(8,12,22,0.6); color:#d9eeff; min-width:180px;
-    box-shadow: inset 0 -2px 8px rgba(0,0,0,0.4);
-  }
-  .btn{
-    background: var(--accent);
-    color:white; font-weight:700; cursor:pointer; box-shadow: 0 10px 40px rgba(96,165,250,0.12);
-    border: 1px solid rgba(255,255,255,0.02);
-    transition: transform .14s ease;
-  }
-  .btn:active{ transform: translateY(1px) }
-
-  .btn[disabled]{ opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none }
-
-  /* previews */
-  .preview-grid{
-    margin-top:22px;
-    display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
-    gap:12px;
-  }
-  .preview-item{
-    background: linear-gradient(180deg, rgba(6,8,12,0.5), rgba(5,6,10,0.35));
-    border-radius:12px; padding:8px; text-align:center; position:relative;
-    border:1px solid rgba(96,165,250,0.04);
-  }
-  .preview-item img{ width:100%; height:86px; object-fit:cover; border-radius:8px; display:block; }
-  .preview-item .name{ font-size:0.85rem; color:#cfe3ff; margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-  .preview-item .remove{
-    position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.45); border-radius:8px; padding:6px; border:1px solid rgba(255,255,255,0.02);
-    cursor:pointer; font-size:0.8rem; color:#ffd6e8;
-  }
-
-  /* result area */
-  .result{
-    margin-top:20px; padding:18px; border-radius:12px;
-    background: linear-gradient(90deg, rgba(6,8,20,0.5), rgba(12,16,30,0.45));
-    border:1px solid rgba(167,139,250,0.06);
-  }
-  .result a{ color:var(--neon-blue); text-decoration:underline; word-break:break-all; display:inline-block; margin-top:6px; }
-
-  footer{ text-align:center; color:#7f9bb6; margin-top:36px; font-size:0.9rem; padding:40px 10px; opacity:0.9 }
-
-  /* small screens */
-  @media (max-width:640px){
-    .upload-box{ padding:22px }
-    h1{ font-size:1.6rem }
-    .drop-zone{ padding:30px 12px }
-    .logo{ font-size:1.1rem }
-  }
+:root{
+  --header-h:76px;
+  --neon-blue:#60a5fa;
+  --neon-purple:#a78bfa;
+  --glass:rgba(10,12,20,0.45);
+  --radius:20px;
+  --glow:0 0 30px rgba(96,165,250,0.18),0 0 80px rgba(167,139,250,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  color:#dbeafe;
+  background-color:#000;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+header{
+  position:fixed;
+  top:env(safe-area-inset-top);
+  left:0;
+  right:0;
+  height:var(--header-h);
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid rgba(167,139,250,0.06);
+  background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(4,8,20,0.35));
+  padding:12px 18px;
+  backdrop-filter:blur(8px) saturate(140%);
+  z-index:1200;
+  box-shadow:0 6px 30px rgba(3,6,18,0.6);
+}
+.container{max-width:1100px;margin:0 auto;width:100%;display:flex;gap:12px;align-items:center}
+.logo{display:flex;align-items:center;gap:12px;color:var(--neon-blue);font-weight:800;font-size:1.6rem;text-shadow:0 0 18px rgba(96,165,250,0.12),0 0 8px rgba(167,139,250,0.06)}
+.logo img{height:42px;width:42px;border-radius:8px;background:linear-gradient(180deg,#07122b,#0b1730);padding:6px;box-shadow:0 6px 30px rgba(96,165,250,0.06)}
+main{padding-top:calc(var(--header-h) + 28px);padding-bottom:80px;display:flex;justify-content:center;align-items:flex-start;min-height:calc(100vh - var(--header-h))}
+.upload-box{width:min(760px,94vw);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:calc(var(--radius) + 6px);padding:36px;box-shadow:var(--glow),inset 0 0 40px rgba(12,16,30,0.4);border:1px solid rgba(96,165,250,0.06);position:relative;overflow:hidden}
+.upload-box::before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 140deg,rgba(96,165,250,0.06),rgba(167,139,250,0.06),rgba(255,92,168,0.03));filter:blur(20px);z-index:0;pointer-events:none}
+.upload-inner{position:relative;z-index:1}
+h1{font-size:2.2rem;margin-bottom:6px;letter-spacing:0.6px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+p.tagline{color:#9fb4d9;margin-bottom:18px;opacity:0.9}
+.drop-zone{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;border-radius:14px;padding:46px 18px;border:2px dashed rgba(96,165,250,0.14);background:linear-gradient(180deg,rgba(10,14,24,0.36),rgba(6,10,18,0.16));transition:all .25s ease;cursor:pointer;box-shadow:0 8px 40px rgba(12,16,30,0.6);position:relative}
+.drop-zone svg{filter:drop-shadow(0 6px 20px rgba(96,165,250,0.12))}
+.drop-zone .dz-text{color:#9fb4d9;font-size:1.05rem;opacity:0.95}
+.drop-zone .dz-sub{color:#93a7c3;font-size:0.9rem}
+.drop-zone.dragover{transform:translateY(-8px) scale(1.01);border-color:var(--neon-blue);box-shadow:0 20px 60px rgba(96,165,250,0.14)}
+.dz-status{margin-top:6px;font-size:0.95rem;color:#bcd3ff;opacity:0.9}
+.controls{margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+select,.btn{padding:12px 14px;border-radius:12px;border:none;font-size:1rem;outline:none;background:rgba(8,12,22,0.6);color:#d9eeff;min-width:180px;box-shadow:inset 0 -2px 8px rgba(0,0,0,0.4)}
+.btn{background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));color:white;font-weight:700;cursor:pointer;box-shadow:0 10px 40px rgba(96,165,250,0.12);border:1px solid rgba(255,255,255,0.02);transition:transform .14s ease}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none}
+.preview-grid{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+.preview-item{background:linear-gradient(180deg,rgba(6,8,12,0.5),rgba(5,6,10,0.35));border-radius:12px;padding:8px;text-align:center;position:relative;border:1px solid rgba(96,165,250,0.04)}
+.preview-item img{width:100%;height:86px;object-fit:cover;border-radius:8px;display:block}
+.preview-item .name{font-size:0.85rem;color:#cfe3ff;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-item .remove{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.45);border-radius:8px;padding:6px;border:1px solid rgba(255,255,255,0.02);cursor:pointer;font-size:0.8rem;color:#ffd6e8}
+.result{margin-top:20px;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(6,8,20,0.5),rgba(12,16,30,0.45));border:1px solid rgba(167,139,250,0.06)}
+.result a{color:var(--neon-blue);text-decoration:underline;word-break:break-all;display:inline-block;margin-top:6px}
+footer{text-align:center;color:#7f9bb6;margin-top:36px;font-size:0.9rem;padding:40px 10px;opacity:0.9}
+@media (max-width:640px){.upload-box{padding:22px}h1{font-size:1.6rem}.drop-zone{padding:30px 12px}.logo{font-size:1.1rem}}
 </style>
 </head>
 <body>
@@ -182,31 +78,24 @@
       <img src="https://i.ibb.co/qMpqPQBd/4-B09-F1-FD-F347-4-F94-835-B-568-B59-DCAA59.png" alt="VortixDrive logo">
       <div>VortixDrive</div>
     </div>
-    <!-- (Optional) extra header controls could go here -->
   </div>
 </header>
-
 <main>
   <div class="upload-box" role="main" aria-labelledby="v-title">
     <div class="upload-inner">
       <h1 id="v-title">VortixDrive</h1>
       <p class="tagline">Fast • Anonymous • Neon</p>
-
-      <!-- Drop zone: we keep structure static and only update status text to avoid breaking event handlers. -->
       <label class="drop-zone" id="dropZone" for="fileInput" tabindex="0" aria-label="Tap or drop files to upload">
         <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></path>
           <polyline points="17 8 12 3 7 8" stroke="#a78bfa" stroke-linecap="round" stroke-linejoin="round"></polyline>
           <line x1="12" y1="3" x2="12" y2="15" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></line>
         </svg>
-
-        <div class="dz-text"><strong style="background:var(--accent); -webkit-background-clip:text; -webkit-text-fill-color:transparent">Tap or drop files here</strong></div>
-        <div class="dz-sub">Images · Videos · Text · Zip · PDF — multiple allowed</div>
+        <div class="dz-text"><strong style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Tap or drop files here</strong></div>
+        <div class="dz-sub">Images · Videos · Text · Zip · PDF · Any file type · Multiple allowed</div>
         <div class="dz-status" id="dzStatus">No files selected</div>
       </label>
-
-      <input type="file" id="fileInput" multiple style="display:none" aria-hidden="true" />
-
+      <input type="file" id="fileInput" multiple aria-hidden="true" />
       <div class="controls" style="margin-top:18px;">
         <select id="expiry" aria-label="Auto-delete time">
           <option value="" selected>Auto-delete after…</option>
@@ -215,45 +104,29 @@
           <option value="30d">30 days</option>
           <option value="never">Never</option>
         </select>
-
         <button class="btn" id="uploadBtn" disabled>Upload & Generate Link</button>
       </div>
-
       <div class="preview-grid" id="previewGrid" aria-live="polite" style="margin-top:18px"></div>
-
       <div class="result" id="result" style="display:none">
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.6"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
           <strong style="color:var(--neon-blue)">Upload complete</strong>
         </div>
-
-        <div id="finalPreviews" style="margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;"></div>
-
-        <div style="margin-top:12px;">
+        <div id="finalPreviews" style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px"></div>
+        <div style="margin-top:12px">
           <div style="color:#9fb4d9">Share link</div>
           <a href="#" id="shareLink" target="_blank" rel="noopener"></a>
-          <div style="margin-top:10px;">
-            <button class="btn" id="copyBtn" style="padding:8px 10px; font-size:0.95rem">Copy Link</button>
+          <div style="margin-top:10px">
+            <button class="btn" id="copyBtn" style="padding:8px 10px;font-size:0.95rem">Copy Link</button>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </main>
-
 <footer>© 2025 VortixDrive — Cyberglass • Neon • Fast</footer>
-
 <script>
-/* -------------------------
-   JS: robust, fixes & improvements
-   - preserve drop-zone DOM (avoid innerHTML overwrites)
-   - allow appending files (select multiple times)
-   - remove single items
-   - safe expiry mapping and robust upload response parsing
-   ------------------------- */
-
-const upload = Upload({ apiKey: "free" }); // your original usage preserved
+const upload = Upload({ apiKey: "free" });
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const previewGrid = document.getElementById('previewGrid');
@@ -264,179 +137,102 @@ const shareLink = document.getElementById('shareLink');
 const copyBtn = document.getElementById('copyBtn');
 const expiry = document.getElementById('expiry');
 const dzStatus = document.getElementById('dzStatus');
-
-let files = []; // will hold File objects
-
-/* Utility to create image preview thumbnails for non-image types */
-function getPlaceholderForFile(file) {
-  if (file.type.startsWith('video/')) return 'https://i.ibb.co/7pX3V0Z/video-preview.png';
-  if (file.type === 'application/pdf') return 'https://i.ibb.co/0jD7Y3W/pdf-preview.png';
+let files = [];
+function makeKey(f){ return `${f.name}:${f.size}:${f.lastModified}`; }
+function getPlaceholderForFile(file){
+  if (file && file.type && file.type.startsWith('video/')) return 'https://i.ibb.co/7pX3V0Z/video-preview.png';
+  if (file && file.type === 'application/pdf') return 'https://i.ibb.co/0jD7Y3W/pdf-preview.png';
   return 'https://i.ibb.co/0jQ8Y3W/file-preview.png';
 }
-
-/* Render preview grid (we use stable DOM updates) */
-function renderPreviews() {
+function renderPreviews(){
   previewGrid.innerHTML = '';
-  if (files.length === 0) {
+  if (files.length === 0){
     dzStatus.textContent = 'No files selected';
     uploadBtn.disabled = true;
     return;
   }
-
   dzStatus.textContent = `${files.length} file(s) ready`;
   uploadBtn.disabled = false;
-
-  files.forEach((file, idx) => {
+  files.forEach((entry)=>{
+    const file = entry.file;
     const item = document.createElement('div');
     item.className = 'preview-item';
-
     const img = document.createElement('img');
-    if (file.type.startsWith('image/')) {
-      img.src = URL.createObjectURL(file);
-      // revoke later when image loads to avoid memory leak
-      img.onload = () => URL.revokeObjectURL(img.src);
-    } else {
-      img.src = getPlaceholderForFile(file);
-    }
-
+    if (file && file.type && file.type.startsWith('image/')){ img.src = URL.createObjectURL(file); img.onload = ()=>URL.revokeObjectURL(img.src); }
+    else img.src = getPlaceholderForFile(file);
     const name = document.createElement('div');
     name.className = 'name';
-    name.title = file.name;
-    name.textContent = file.name.length > 26 ? file.name.slice(0,24) + '…' : file.name;
-
+    name.title = file.name || '';
+    const filename = file && file.name ? file.name : 'unnamed';
+    name.textContent = filename.length > 26 ? filename.slice(0,24) + '…' : filename;
     const removeBtn = document.createElement('button');
     removeBtn.className = 'remove';
     removeBtn.textContent = '✕';
-    removeBtn.setAttribute('aria-label', 'Remove file');
-    removeBtn.onclick = (e) => {
-      e.stopPropagation();
-      files.splice(idx, 1);
-      renderPreviews();
-    };
-
+    removeBtn.setAttribute('aria-label','Remove file');
+    removeBtn.onclick = (e)=>{ e.stopPropagation(); files = files.filter(f=>f.id !== entry.id); renderPreviews(); };
     item.appendChild(img);
     item.appendChild(removeBtn);
     item.appendChild(name);
     previewGrid.appendChild(item);
   });
 }
-
-/* Safe handler: appends new files without removing previous selection.
-   If you prefer to replace instead, replace the merging logic below. */
-function handleFiles(newFilesList) {
+function handleFiles(newFilesList){
   if (!newFilesList || !newFilesList.length) return;
   const incoming = Array.from(newFilesList);
-
-  // Optionally remove duplicates by name+size. We'll filter identical file entries.
-  const existingKeys = new Set(files.map(f => `${f.name}:${f.size}:${f.lastModified}`));
-  incoming.forEach(f => {
-    const key = `${f.name}:${f.size}:${f.lastModified}`;
-    if (!existingKeys.has(key)) {
-      files.push(f);
+  const existingKeys = new Set(files.map(f=>makeKey(f.file)));
+  incoming.forEach((f)=>{
+    const key = makeKey(f);
+    if (!existingKeys.has(key)){
+      files.push({ id: `${key}:${Date.now()}:${Math.random().toString(36).slice(2,7)}`, file: f });
       existingKeys.add(key);
     }
   });
-
   renderPreviews();
 }
-
-/* Drag & drop plumbing */
-dropZone.addEventListener('click', () => fileInput.click());
-dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
-
-dropZone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  dropZone.classList.add('dragover');
-});
-dropZone.addEventListener('dragenter', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', (e) => { dropZone.classList.remove('dragover'); });
-dropZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
-  if (e.dataTransfer && e.dataTransfer.files) {
-    handleFiles(e.dataTransfer.files);
-  }
-});
-
-/* file input change */
-fileInput.addEventListener('change', () => {
-  if (fileInput.files && fileInput.files.length) {
-    handleFiles(fileInput.files);
-    // Clear input so selecting same files again still triggers change
-    fileInput.value = '';
-  }
-});
-
-/* Copy button */
-copyBtn.addEventListener('click', async () => {
+dropZone.addEventListener('click', ()=> fileInput.click());
+dropZone.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+dropZone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragenter', (e)=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e)=>{ e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', ()=>{ if (fileInput.files && fileInput.files.length) handleFiles(fileInput.files); fileInput.value = ''; });
+copyBtn.addEventListener('click', async ()=>{
   const href = shareLink.href;
   if (!href) return;
-  try {
-    await navigator.clipboard.writeText(href);
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => copyBtn.textContent = 'Copy Link', 1500);
-  } catch (err) {
-    alert('Copy failed — ' + (err && err.message ? err.message : err));
-  }
+  try{ await navigator.clipboard.writeText(href); copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy Link',1500); }catch(err){ alert('Copy failed — ' + (err && err.message ? err.message : err)); }
 });
-
-/* Upload handler */
-uploadBtn.addEventListener('click', async () => {
+uploadBtn.addEventListener('click', async ()=>{
   if (!files.length) return;
   uploadBtn.disabled = true;
   uploadBtn.textContent = 'Uploading…';
-
-  // map expiry selection to the library argument — keep null if none chosen
   const expiryMap = { '5d':'5d', '10d':'10d', '30d':'30d', 'never': null };
   let expiryArg = expiryMap[expiry.value] ?? null;
-
-  try {
-    // Some SDKs expect FileList/Array of Files. We send files array.
-    const res = await upload.uploadFiles(files, { expiry: expiryArg });
-
-    /* Robust extraction of urls:
-       - some libs return { fileUrls: [..] }
-       - others return an array of objects with a fileUrl/fileUrl or url fields
-       We attempt to discover file urls in common patterns. */
+  try{
+    const res = await upload.uploadFiles(files.map(e=>e.file), { expiry: expiryArg });
     let urls = [];
-
-    if (!res) {
-      throw new Error('No response from upload library');
-    }
-
-    if (Array.isArray(res)) {
-      // maybe array of uploaded file objects
-      for (const r of res) {
+    if (!res) throw new Error('No response from upload library');
+    if (Array.isArray(res)){
+      for (const r of res){
         if (typeof r === 'string') urls.push(r);
         else if (r.fileUrl) urls.push(r.fileUrl);
         else if (r.url) urls.push(r.url);
         else if (r.fileUrls && Array.isArray(r.fileUrls)) urls.push(...r.fileUrls);
       }
-    } else if (res.fileUrls && Array.isArray(res.fileUrls)) {
-      urls = res.fileUrls;
-    } else if (res.fileUrl) {
-      urls = [res.fileUrl];
-    } else if (res.url) {
-      urls = [res.url];
-    } else {
-      // Last resort, try to pick values from object
-      for (const v of Object.values(res)) {
+    } else if (res.fileUrls && Array.isArray(res.fileUrls)) urls = res.fileUrls;
+    else if (res.fileUrl) urls = [res.fileUrl];
+    else if (res.url) urls = [res.url];
+    else{
+      for (const v of Object.values(res)){
         if (typeof v === 'string' && v.startsWith('http')) urls.push(v);
-        if (Array.isArray(v)) {
+        if (Array.isArray(v)){
           for (const inner of v) if (typeof inner === 'string' && inner.startsWith('http')) urls.push(inner);
-          if (Array.isArray(v) && v.length && v[0].fileUrl) urls.push(...v.map(x => x.fileUrl));
+          if (v.length && v[0] && v[0].fileUrl) urls.push(...v.map(x=>x.fileUrl));
         }
       }
     }
-
-    // Fallback: if still empty and the SDK returned objects with path or similar, convert to placeholder
-    if (!urls.length) {
-      throw new Error('Upload succeeded but no urls were found in response. Check SDK response format.');
-    }
-
-    // Build result UI
+    if (!urls.length) throw new Error('Upload succeeded but no urls were found in response.');
     finalPreviews.innerHTML = '';
-    urls.forEach((url, i) => {
+    urls.forEach((url,i)=>{
       const box = document.createElement('div');
       box.style.padding = '6px';
       box.style.borderRadius = '8px';
@@ -447,39 +243,26 @@ uploadBtn.addEventListener('click', async () => {
       img.style.height = '80px';
       img.style.objectFit = 'cover';
       img.style.borderRadius = '6px';
-
-      const f = files[i] || { type: '', name: 'file' };
-      if (f.type && f.type.startsWith('image/')) {
-        // use object URL to preview local thumbnail (safe to show)
-        img.src = URL.createObjectURL(f);
-        img.onload = () => URL.revokeObjectURL(img.src);
-      } else {
-        img.src = getPlaceholderForFile(f);
-      }
-
+      const f = files[i] ? files[i].file : { type: '', name: 'file' };
+      if (f.type && f.type.startsWith('image/')){ img.src = URL.createObjectURL(f); img.onload = ()=>URL.revokeObjectURL(img.src); } else img.src = getPlaceholderForFile(f);
       const nm = document.createElement('div');
       nm.style.marginTop = '8px';
       nm.style.fontSize = '0.9rem';
       nm.style.color = '#bcd3ff';
       nm.textContent = f.name ? (f.name.length > 26 ? f.name.slice(0,24) + '…' : f.name) : url;
-
       box.appendChild(img);
       box.appendChild(nm);
       finalPreviews.appendChild(box);
     });
-
-    // choose primary share link (for many file hosts you may want to create a collection link; we use first url)
     const primaryLink = urls[0];
     shareLink.href = primaryLink;
     shareLink.textContent = primaryLink;
     result.style.display = 'block';
-
-    // reset local state but keep result visible
     files = [];
     renderPreviews();
     uploadBtn.textContent = 'Upload & Generate Link';
     uploadBtn.disabled = true;
-  } catch (err) {
+  }catch(err){
     console.error(err);
     const msg = err && err.message ? err.message : String(err);
     alert('Upload failed — ' + msg);
@@ -487,8 +270,6 @@ uploadBtn.addEventListener('click', async () => {
     uploadBtn.textContent = 'Upload & Generate Link';
   }
 });
-
-/* init: render empty state */
 renderPreviews();
 </script>
 </body>
