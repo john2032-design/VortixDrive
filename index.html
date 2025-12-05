@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>VortixDrive</title>
-<link rel="icon" href="https://i.ibb.co/qMpqPQBd/4-B09-F1-FD-F347-4-F94-835-B-568-B59-DCAA59.png">
+<link rel="icon" href="https://i.ibb.co/B50CptwN/42-A63-D83-D687-4-F3-C-A9-B8-0-E5-AF3-EBD0-B4.png">
 <script src="https://cdn.jsdelivr.net/npm/@upload.io/upload-js@latest"></script>
 <style>
 :root{
@@ -23,6 +23,7 @@ body{
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  -webkit-tap-highlight-color:transparent;
 }
 header{
   position:fixed;
@@ -68,14 +69,42 @@ select,.btn{padding:12px 14px;border-radius:12px;border:none;font-size:1rem;outl
 .result a{color:var(--neon-blue);text-decoration:underline;word-break:break-all;display:inline-block;margin-top:6px}
 footer{text-align:center;color:#7f9bb6;margin-top:36px;font-size:0.9rem;padding:40px 10px;opacity:0.9}
 input[type="file"].hidden-file-input{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
-@media (max-width:640px){.upload-box{padding:22px}h1{font-size:1.6rem}.drop-zone{padding:30px 12px}.logo{font-size:1.1rem}}
+
+/* Mobile Fixes */
+@media (max-width:640px){
+  .upload-box{padding:22px}
+  h1{font-size:1.6rem}
+  .drop-zone{padding:30px 12px;min-height:180px}
+  .logo{font-size:1.1rem}
+  .controls{flex-direction:column;align-items:stretch}
+  select,.btn{min-width:auto;width:100%}
+  .btn{padding:14px;font-size:1.05rem}
+}
+
+/* Mobile Touch Fixes */
+.drop-zone {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.drop-zone:active {
+  transform: scale(0.98);
+}
+
+/* Ensure proper spacing on very small screens */
+@media (max-width:360px){
+  .upload-box{padding:16px}
+  .drop-zone{padding:24px 8px;min-height:160px}
+  h1{font-size:1.4rem}
+}
 </style>
 </head>
 <body>
 <header>
   <div class="container">
     <div class="logo" aria-hidden="true">
-      <img src="https://i.ibb.co/qMpqPQBd/4-B09-F1-FD-F347-4-F94-835-B-568-B59-DCAA59.png" alt="VortixDrive logo">
+      <img src="https://i.ibb.co/B50CptwN/42-A63-D83-D687-4-F3-C-A9-B8-0-E5-AF3-EBD0-B4.png" alt="VortixDrive logo">
       <div>VortixDrive</div>
     </div>
   </div>
@@ -85,17 +114,22 @@ input[type="file"].hidden-file-input{position:absolute;left:-9999px;width:1px;he
     <div class="upload-inner">
       <h1 id="v-title">VortixDrive</h1>
       <p class="tagline">Fast • Anonymous • Neon</p>
-      <label class="drop-zone" id="dropZone" tabindex="0" aria-label="Tap or drop files to upload">
-        <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></path>
-          <polyline points="17 8 12 3 7 8" stroke="#a78bfa" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></line>
-        </svg>
-        <div class="dz-text"><strong style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Tap or drop files here</strong></div>
-        <div class="dz-sub">Images · Videos · Text · Zip · PDF · Any file type · Multiple allowed</div>
-        <div class="dz-status" id="dzStatus">No files selected</div>
-      </label>
-      <input type="file" id="fileInput" class="hidden-file-input" multiple aria-hidden="true" />
+      
+      <!-- Mobile-friendly file input structure -->
+      <div style="position:relative">
+        <label for="fileInput" class="drop-zone" id="dropZone" aria-label="Tap or drop files to upload">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></path>
+            <polyline points="17 8 12 3 7 8" stroke="#a78bfa" stroke-linecap="round" stroke-linejoin="round"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15" stroke="#60a5fa" stroke-linecap="round" stroke-linejoin="round"></line>
+          </svg>
+          <div class="dz-text"><strong style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Tap or drop files here</strong></div>
+          <div class="dz-sub">Images · Videos · Text · Zip · PDF · Any file type · Multiple allowed</div>
+          <div class="dz-status" id="dzStatus">No files selected</div>
+        </label>
+        <input type="file" id="fileInput" class="hidden-file-input" multiple aria-hidden="true" />
+      </div>
+      
       <div class="controls" style="margin-top:18px;">
         <select id="expiry" aria-label="Auto-delete time">
           <option value="" selected>Auto-delete after…</option>
@@ -138,68 +172,260 @@ const copyBtn = document.getElementById('copyBtn');
 const expiry = document.getElementById('expiry');
 const dzStatus = document.getElementById('dzStatus');
 let files = [];
+
 function makeKey(f){ return `${f.name}:${f.size}:${f.lastModified}`; }
+
 function getPlaceholderForFile(file){
   if (file && file.type && file.type.startsWith('video/')) return 'https://i.ibb.co/7pX3V0Z/video-preview.png';
   if (file && file.type === 'application/pdf') return 'https://i.ibb.co/0jD7Y3W/pdf-preview.png';
   return 'https://i.ibb.co/0jQ8Y3W/file-preview.png';
 }
+
 function updateDzStatus(){
   if (files.length === 0){ dzStatus.textContent = 'No files selected'; return; }
   if (files.length === 1){ dzStatus.textContent = files[0].file.name; return; }
   dzStatus.textContent = `${files.length} files selected`;
 }
+
 function renderPreviews(){
   previewGrid.innerHTML = '';
   if (files.length === 0){ uploadBtn.disabled = true; updateDzStatus(); return; }
   uploadBtn.disabled = false;
   updateDzStatus();
+  
   files.forEach((entry)=>{
     const file = entry.file;
     const item = document.createElement('div');
     item.className = 'preview-item';
+    
     const img = document.createElement('img');
-    if (file && file.type && file.type.startsWith('image/')){ img.src = URL.createObjectURL(file); img.onload = ()=>URL.revokeObjectURL(img.src); }
+    if (file && file.type && file.type.startsWith('image/')){ 
+      img.src = URL.createObjectURL(file); 
+      img.onload = ()=>URL.revokeObjectURL(img.src); 
+    }
     else img.src = getPlaceholderForFile(file);
+    
     const name = document.createElement('div');
     name.className = 'name';
     name.title = file.name || '';
     const filename = file && file.name ? file.name : 'unnamed';
     name.textContent = filename.length > 26 ? filename.slice(0,24) + '…' : filename;
+    
     const removeBtn = document.createElement('button');
     removeBtn.className = 'remove';
     removeBtn.textContent = '✕';
     removeBtn.setAttribute('aria-label','Remove file');
-    removeBtn.onclick = (e)=>{ e.stopPropagation(); files = files.filter(f=>f.id !== entry.id); renderPreviews(); };
+    removeBtn.onclick = (e)=>{ 
+      e.stopPropagation(); 
+      e.preventDefault();
+      files = files.filter(f=>f.id !== entry.id); 
+      renderPreviews(); 
+    };
+    
     item.appendChild(img);
     item.appendChild(removeBtn);
     item.appendChild(name);
     previewGrid.appendChild(item);
   });
 }
+
 function handleFiles(newFilesList){
   if (!newFilesList || !newFilesList.length) return;
   const incoming = Array.from(newFilesList);
   const existingKeys = new Set(files.map(f=>makeKey(f.file)));
+  
   incoming.forEach((f)=>{
     const key = makeKey(f);
     if (!existingKeys.has(key)){
-      files.push({ id: `${key}:${Date.now()}:${Math.random().toString(36).slice(2,7)}`, file: f });
+      files.push({ 
+        id: `${key}:${Date.now()}:${Math.random().toString(36).slice(2,7)}`, 
+        file: f 
+      });
       existingKeys.add(key);
     }
   });
   renderPreviews();
 }
-dropZone.addEventListener('click', ()=> fileInput.click());
-dropZone.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
-dropZone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragenter', (e)=>{ e.preventDefault(); dropZone.classList.add('dragover'); });
+
+// Fixed mobile tap handling - using label association
+dropZone.addEventListener('click', (e) => {
+  // Prevent multiple triggers on mobile
+  e.stopPropagation();
+});
+
+// Keep drag and drop functionality
+dropZone.addEventListener('dragover', (e)=>{ 
+  e.preventDefault(); 
+  dropZone.classList.add('dragover'); 
+});
+
+dropZone.addEventListener('dragenter', (e)=>{ 
+  e.preventDefault(); 
+  dropZone.classList.add('dragover'); 
+});
+
 dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', (e)=>{ e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files); });
-fileInput.addEventListener('change', ()=>{ if (fileInput.files && fileInput.files.length) handleFiles(fileInput.files); fileInput.value = ''; });
-copyBtn.addEventListener('click', async ()=>{ const href = shareLink.href; if (!href) return; try{ await navigator.clipboard.writeText(href); copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy Link',1500); }catch(err){ alert('Copy failed — ' + (err && err.message ? err.message : err)); } });
-uploadBtn.addEventListener('click', async ()=>{ if (!files.length) return; uploadBtn.disabled = true; uploadBtn.textContent = 'Uploading…'; const expiryMap = { '5d':'5d', '10d':'10d', '30d':'30d', 'never': null }; let expiryArg = expiryMap[expiry.value] ?? null; try{ const res = await upload.uploadFiles(files.map(e=>e.file), { expiry: expiryArg }); let urls = []; if (!res) throw new Error('No response from upload library'); if (Array.isArray(res)){ for (const r of res){ if (typeof r === 'string') urls.push(r); else if (r.fileUrl) urls.push(r.fileUrl); else if (r.url) urls.push(r.url); else if (r.fileUrls && Array.isArray(r.fileUrls)) urls.push(...r.fileUrls); } } else if (res.fileUrls && Array.isArray(res.fileUrls)) urls = res.fileUrls; else if (res.fileUrl) urls = [res.fileUrl]; else if (res.url) urls = [res.url]; else{ for (const v of Object.values(res)){ if (typeof v === 'string' && v.startsWith('http')) urls.push(v); if (Array.isArray(v)){ for (const inner of v) if (typeof inner === 'string' && inner.startsWith('http')) urls.push(inner); if (v.length && v[0] && v[0].fileUrl) urls.push(...v.map(x=>x.fileUrl)); } } } if (!urls.length) throw new Error('Upload succeeded but no urls were found in response.'); finalPreviews.innerHTML = ''; urls.forEach((url,i)=>{ const box = document.createElement('div'); box.style.padding = '6px'; box.style.borderRadius = '8px'; box.style.background = 'rgba(0,0,0,0.25)'; box.style.border = '1px solid rgba(96,165,250,0.03)'; const img = document.createElement('img'); img.style.width = '100%'; img.style.height = '80px'; img.style.objectFit = 'cover'; img.style.borderRadius = '6px'; const f = files[i] ? files[i].file : { type: '', name: 'file' }; if (f.type && f.type.startsWith('image/')){ img.src = URL.createObjectURL(f); img.onload = ()=>URL.revokeObjectURL(img.src); } else img.src = getPlaceholderForFile(f); const nm = document.createElement('div'); nm.style.marginTop = '8px'; nm.style.fontSize = '0.9rem'; nm.style.color = '#bcd3ff'; nm.textContent = f.name ? (f.name.length > 26 ? f.name.slice(0,24) + '…' : f.name) : url; box.appendChild(img); box.appendChild(nm); finalPreviews.appendChild(box); }); const primaryLink = urls[0]; shareLink.href = primaryLink; shareLink.textContent = primaryLink; result.style.display = 'block'; files = []; renderPreviews(); uploadBtn.textContent = 'Upload & Generate Link'; uploadBtn.disabled = true; }catch(err){ console.error(err); const msg = err && err.message ? err.message : String(err); alert('Upload failed — ' + msg); uploadBtn.disabled = false; uploadBtn.textContent = 'Upload & Generate Link'; } });
+
+dropZone.addEventListener('drop', (e)=>{ 
+  e.preventDefault(); 
+  dropZone.classList.remove('dragover'); 
+  if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files); 
+});
+
+// File input change handler
+fileInput.addEventListener('change', (e)=>{ 
+  if (fileInput.files && fileInput.files.length) handleFiles(fileInput.files); 
+  // Reset the input to allow selecting the same file again
+  fileInput.value = ''; 
+});
+
+// Copy link functionality
+copyBtn.addEventListener('click', async ()=>{ 
+  const href = shareLink.href; 
+  if (!href) return; 
+  try{ 
+    await navigator.clipboard.writeText(href); 
+    copyBtn.textContent = 'Copied!'; 
+    copyBtn.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+    setTimeout(()=> {
+      copyBtn.textContent = 'Copy Link';
+      copyBtn.style.background = 'linear-gradient(90deg, var(--neon-blue), var(--neon-purple))';
+    },1500); 
+  }catch(err){ 
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = href;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(()=> copyBtn.textContent = 'Copy Link',1500);
+  } 
+});
+
+// Upload functionality
+uploadBtn.addEventListener('click', async ()=>{ 
+  if (!files.length) return; 
+  uploadBtn.disabled = true; 
+  uploadBtn.textContent = 'Uploading…'; 
+  
+  const expiryMap = { 
+    '5d':'5d', 
+    '10d':'10d', 
+    '30d':'30d', 
+    'never': null 
+  }; 
+  let expiryArg = expiryMap[expiry.value] ?? null; 
+  
+  try{ 
+    const res = await upload.uploadFiles(files.map(e=>e.file), { 
+      expiry: expiryArg 
+    }); 
+    
+    let urls = []; 
+    if (!res) throw new Error('No response from upload library'); 
+    
+    if (Array.isArray(res)){ 
+      for (const r of res){ 
+        if (typeof r === 'string') urls.push(r); 
+        else if (r.fileUrl) urls.push(r.fileUrl); 
+        else if (r.url) urls.push(r.url); 
+        else if (r.fileUrls && Array.isArray(r.fileUrls)) urls.push(...r.fileUrls); 
+      } 
+    } else if (res.fileUrls && Array.isArray(res.fileUrls)) { 
+      urls = res.fileUrls; 
+    } else if (res.fileUrl) { 
+      urls = [res.fileUrl]; 
+    } else if (res.url) { 
+      urls = [res.url]; 
+    } else { 
+      for (const v of Object.values(res)){ 
+        if (typeof v === 'string' && v.startsWith('http')) urls.push(v); 
+        if (Array.isArray(v)){ 
+          for (const inner of v) if (typeof inner === 'string' && inner.startsWith('http')) urls.push(inner); 
+          if (v.length && v[0] && v[0].fileUrl) urls.push(...v.map(x=>x.fileUrl)); 
+        } 
+      } 
+    } 
+    
+    if (!urls.length) throw new Error('Upload succeeded but no urls were found in response.'); 
+    
+    finalPreviews.innerHTML = ''; 
+    urls.forEach((url,i)=>{ 
+      const box = document.createElement('div'); 
+      box.style.padding = '6px'; 
+      box.style.borderRadius = '8px'; 
+      box.style.background = 'rgba(0,0,0,0.25)'; 
+      box.style.border = '1px solid rgba(96,165,250,0.03)'; 
+      
+      const img = document.createElement('img'); 
+      img.style.width = '100%'; 
+      img.style.height = '80px'; 
+      img.style.objectFit = 'cover'; 
+      img.style.borderRadius = '6px'; 
+      
+      const f = files[i] ? files[i].file : { type: '', name: 'file' }; 
+      if (f.type && f.type.startsWith('image/')){ 
+        img.src = URL.createObjectURL(f); 
+        img.onload = ()=>URL.revokeObjectURL(img.src); 
+      } else img.src = getPlaceholderForFile(f); 
+      
+      const nm = document.createElement('div'); 
+      nm.style.marginTop = '8px'; 
+      nm.style.fontSize = '0.9rem'; 
+      nm.style.color = '#bcd3ff'; 
+      nm.textContent = f.name ? (f.name.length > 26 ? f.name.slice(0,24) + '…' : f.name) : url; 
+      
+      box.appendChild(img); 
+      box.appendChild(nm); 
+      finalPreviews.appendChild(box); 
+    }); 
+    
+    const primaryLink = urls[0]; 
+    shareLink.href = primaryLink; 
+    shareLink.textContent = primaryLink; 
+    result.style.display = 'block'; 
+    
+    // Scroll to results on mobile
+    if (window.innerWidth < 768) {
+      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    files = []; 
+    renderPreviews(); 
+    uploadBtn.textContent = 'Upload & Generate Link'; 
+    uploadBtn.disabled = true; 
+    
+  }catch(err){ 
+    console.error(err); 
+    const msg = err && err.message ? err.message : String(err); 
+    alert('Upload failed — ' + msg); 
+    uploadBtn.disabled = false; 
+    uploadBtn.textContent = 'Upload & Generate Link'; 
+  } 
+});
+
+// Initialize
 renderPreviews();
+
+// Add touch-specific improvements
+if ('ontouchstart' in window) {
+  document.body.classList.add('touch-device');
+  
+  // Improve button feedback on touch devices
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('touchstart', () => {
+      btn.style.opacity = '0.8';
+    });
+    
+    btn.addEventListener('touchend', () => {
+      setTimeout(() => {
+        btn.style.opacity = '1';
+      }, 150);
+    });
+  });
+}
 </script>
 </body>
 </html>
