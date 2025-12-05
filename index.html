@@ -6,8 +6,8 @@
     <title>Pingora • Professional Internet Speed Test</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Ookla Speedtest Web SDK (requires license key) -->
-    <script src="https://cdn.speedtestcustom.com/sdk/v2.1.1/speedtest.js"></script>
+    <!-- Official Ookla Speedtest Web SDK (License Required) -->
+    <script src="https://unpkg.com/@ookla/speedtest-js-sdk@2.1.1/dist/speedtest.js"></script>
     <style>
         :root {
             --primary: #0066ff;
@@ -159,26 +159,6 @@
             margin-bottom: 48px;
             position: relative;
             overflow: hidden;
-        }
-
-        .test-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, 
-                transparent 30%, 
-                rgba(0, 102, 255, 0.1) 50%, 
-                transparent 70%);
-            animation: shine 8s infinite linear;
-            z-index: 0;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .visualization {
@@ -1363,7 +1343,7 @@
                 
                 // Configure test
                 const config = {
-                    // License key required for production use
+                    // ⚠️ REPLACE WITH YOUR LICENSE KEY FOR PRODUCTION
                     // licenseKey: 'YOUR_LICENSE_KEY_HERE',
                     
                     // Test configuration
