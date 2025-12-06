@@ -124,37 +124,11 @@
             text-shadow: 0 0 5px #0074D9;
         }
         
-        .speedometer {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: conic-gradient(#0074D9 0deg, #001f3f 0deg);
-            margin: 2rem auto;
-            position: relative;
+        #speedometer {
             display: none;
-        }
-        
-        .needle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 2px;
-            height: 90px;
-            background: #ffffff;
-            transform-origin: bottom center;
-            transform: translateX(-50%) rotate(-90deg);
-            transition: transform 1s ease;
-        }
-        
-        .center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            background: #ffffff;
+            margin: 2rem auto;
             border-radius: 50%;
-            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
         }
         
         .status {
@@ -178,10 +152,7 @@
         
         <div class="status" id="status">Ready to test.</div>
         
-        <div class="speedometer" id="speedometer">
-            <div class="needle" id="needle"></div>
-            <div class="center"></div>
-        </div>
+        <canvas id="speedometer" width="300" height="300"></canvas>
         
         <div class="results" id="results">
             <div class="result-item">
@@ -204,6 +175,26 @@
                 <span class="result-label">Packet Loss:</span>
                 <span class="result-value" id="packetLoss">0%</span>
             </div>
+            <div class="result-item">
+                <span class="result-label">Download Loaded Latency:</span>
+                <span class="result-value" id="downLoaded">0 ms</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Upload Loaded Latency:</span>
+                <span class="result-value" id="upLoaded">0 ms</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Streaming Score:</span>
+                <span class="result-value" id="streaming">0</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Gaming Score:</span>
+                <span class="result-value" id="gaming">0</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">RTC Score:</span>
+                <span class="result-value" id="rtc">0</span>
+            </div>
         </div>
     </div>
 
@@ -215,23 +206,105 @@
         const progressBar = document.getElementById('progressBar');
         const status = document.getElementById('status');
         const resultsDiv = document.getElementById('results');
-        const speedometer = document.getElementById('speedometer');
-        const needle = document.getElementById('needle');
+        const canvas = document.getElementById('speedometer');
+        const ctx = canvas.getContext('2d');
 
         let speedTest;
+        let currentSpeed = 0;
+        let targetSpeed = 0;
+        let animationId;
 
+        function drawSpeedometer() {
+            ctx.clearRect(0, 0, 300, 300);
+            
+            // Outer arc
+            ctx.beginPath();
+            ctx.arc(150, 150, 140, Math.PI * 0.75, Math.PI * 2.25);
+            const grad = ctx.createLinearGradient(0, 0, 300, 300);
+            grad.addColorStop(0, '#0074D9');
+            grad.addColorStop(1, '#B10DC9');
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 20;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#00FFFF';
+            ctx.stroke();
+            
+            // Ticks
+            for (let i = 0; i <= 10; i++) {
+                const angle = Math.PI * 0.75 + (Math.PI * 1.5 / 10) * i;
+                const x1 = 150 + 120 * Math.cos(angle);
+                const y1 = 150 + 120 * Math.sin(angle);
+                const x2 = 150 + 140 * Math.cos(angle);
+                const y2 = 150 + 140 * Math.sin(angle);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#00FFFF';
+                ctx.stroke();
+            }
+            
+            // Labels (simple)
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px Orbitron';
+            ctx.shadowBlur = 0;
+            for (let i = 0; i <= 10; i += 2) {
+                const angle = Math.PI * 0.75 + (Math.PI * 1.5 / 10) * i;
+                const x = 150 + 100 * Math.cos(angle) - 10;
+                const y = 150 + 100 * Math.sin(angle) + 5;
+                ctx.fillText((i * 100).toString(), x, y);
+            }
+            
+            // Needle
+            const angle = Math.PI * 0.75 + (Math.PI * 1.5 * currentSpeed / 1000);
+            const nx = 150 + 120 * Math.cos(angle);
+            const ny = 150 + 120 * Math.sin(angle);
+            ctx.beginPath();
+            ctx.moveTo(150, 150);
+            ctx.lineTo(nx, ny);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ffffff';
+            ctx.stroke();
+            
+            // Center
+            ctx.beginPath();
+            ctx.arc(150, 150, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#001f3f';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(150, 150, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#00FFFF';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00FFFF';
+            ctx.fill();
+        }
+        
+        function animate() {
+            currentSpeed += (targetSpeed - currentSpeed) * 0.05;
+            drawSpeedometer();
+            animationId = requestAnimationFrame(animate);
+        }
+        
         startBtn.addEventListener('click', () => {
+            if (animationId) cancelAnimationFrame(animationId);
             startBtn.disabled = true;
             startBtn.textContent = 'Testing...';
             progress.style.display = 'block';
             status.textContent = 'Initializing...';
             resultsDiv.style.display = 'none';
-            speedometer.style.display = 'block';
-
+            canvas.style.display = 'block';
+            currentSpeed = 0;
+            targetSpeed = 0;
+            animate();
+            
             speedTest = new SpeedTest({
                 autoStart: true
             });
-
+            
             speedTest.onRunningChange((running) => {
                 if (running) {
                     status.textContent = 'Running speed test...';
@@ -239,32 +312,37 @@
                     status.textContent = 'Test complete!';
                 }
             });
-
+            
             speedTest.onResultsChange((change) => {
+                const bw = speedTest.results.getDownloadBandwidth();
+                if (bw > 0) {
+                    targetSpeed = bw / 1000000; // Mbps
+                }
                 // Simulate progress
-                const progressVal = Math.min(100, (speedTest.results.getDownloadBandwidth() / 100000000) * 100); // Rough estimate
+                const progressVal = Math.min(100, (targetSpeed / 10) * 100); // Rough
                 progressBar.style.width = progressVal + '%';
             });
-
+            
             speedTest.onFinish((results) => {
                 displayResults(results);
+                targetSpeed = results.getSummary().download / 1000000;
                 startBtn.disabled = false;
                 startBtn.textContent = 'Retest';
                 progress.style.display = 'none';
                 progressBar.style.width = '0%';
                 resultsDiv.style.display = 'block';
-                animateNeedle(results.getSummary().download / 1000000); // Mbps to degrees rough
             });
-
+            
             speedTest.onError((error) => {
                 status.textContent = `Error: ${error}`;
                 startBtn.disabled = false;
                 startBtn.textContent = 'Start Test';
                 progress.style.display = 'none';
-                speedometer.style.display = 'none';
+                canvas.style.display = 'none';
+                if (animationId) cancelAnimationFrame(animationId);
             });
         });
-
+        
         function displayResults(results) {
             const summary = results.getSummary();
             document.getElementById('download').textContent = (summary.download / 1000000).toFixed(1) + ' Mbps';
@@ -272,12 +350,12 @@
             document.getElementById('latency').textContent = summary.unloadedLatency.toFixed(0) + ' ms';
             document.getElementById('jitter').textContent = summary.unloadedJitter.toFixed(0) + ' ms';
             document.getElementById('packetLoss').textContent = (summary.packetLoss * 100).toFixed(1) + '%';
-        }
-
-        function animateNeedle(speedMbps) {
-            // Map 0-1000 Mbps to 0-180 degrees
-            const angle = Math.min(180, (speedMbps / 1000) * 180);
-            needle.style.transform = `translateX(-50%) rotate(${angle - 90}deg)`;
+            document.getElementById('downLoaded').textContent = results.getDownLoadedLatency().toFixed(0) + ' ms';
+            document.getElementById('upLoaded').textContent = results.getUpLoadedLatency().toFixed(0) + ' ms';
+            const scores = results.getScores();
+            document.getElementById('streaming').textContent = scores.streaming.toFixed(0);
+            document.getElementById('gaming').textContent = scores.gaming.toFixed(0);
+            document.getElementById('rtc').textContent = scores.rtc.toFixed(0);
         }
     </script>
 </body>
