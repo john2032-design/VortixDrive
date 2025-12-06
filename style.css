@@ -1,0 +1,212 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', monospace;
+    background: linear-gradient(135deg, #001f3f 0%, #0074D9 25%, #B10DC9 50%, #00FFFF 75%, #001f3f 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 900px;
+    width: 90%;
+    background: rgba(0, 31, 63, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(0, 116, 217, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px #00FFFF);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px #00FFFF;
+    color: #ffffff;
+}
+
+p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+}
+
+#startBtn {
+    background: linear-gradient(45deg, #0074D9, #B10DC9);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    color: white;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(177, 13, 201, 0.5);
+    margin-bottom: 2rem;
+}
+
+#startBtn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 116, 217, 0.8);
+}
+
+#startBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.progress-container {
+    display: none;
+    margin-bottom: 1rem;
+}
+
+.progress-label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #00FFFF;
+}
+
+.progress {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0074D9, #00FFFF);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.status {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    color: #00FFFF;
+    text-shadow: 0 0 5px #00FFFF;
+    min-height: 1.5rem;
+}
+
+#speedometer {
+    display: none;
+    margin: 2rem auto;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.phase-indicator {
+    font-size: 1.1rem;
+    color: #B10DC9;
+    margin: 1rem 0;
+    font-weight: 700;
+    display: none;
+}
+
+.results {
+    display: none;
+    margin-top: 2rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.metric-card {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 116, 217, 0.3);
+}
+
+.metric-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #B10DC9;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 5px #0074D9;
+}
+
+.download { border-left: 4px solid #0074D9; }
+.upload { border-left: 4px solid #B10DC9; }
+.latency { border-left: 4px solid #00FFFF; }
+.jitter { border-left: 4px solid #FFDC00; }
+.packet-loss { border-left: 4px solid #FF4136; }
+.down-loaded { border-left: 4px solid #0074D9; }
+.up-loaded { border-left: 4px solid #B10DC9; }
+.streaming { border-left: 4px solid #2ECC40; }
+.gaming { border-left: 4px solid #FF6B35; }
+.rtc { border-left: 4px solid #9B59B6; }
+
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+}
