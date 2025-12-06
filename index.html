@@ -1,362 +1,100 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberSpeed Test</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #001f3f 0%, #0074D9 25%, #B10DC9 50%, #00FFFF 75%, #001f3f 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .container {
-            text-align: center;
-            padding: 2rem;
-            max-width: 800px;
-            width: 90%;
-            background: rgba(0, 31, 63, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0, 116, 217, 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 10px #00FFFF;
-            color: #ffffff;
-        }
-        
-        #startBtn {
-            background: linear-gradient(45deg, #0074D9, #B10DC9);
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: white;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(177, 13, 201, 0.5);
-            margin-bottom: 2rem;
-        }
-        
-        #startBtn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0, 116, 217, 0.8);
-        }
-        
-        #startBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .progress {
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            display: none;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #0074D9, #00FFFF);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 5px;
-        }
-        
-        .results {
-            display: none;
-            text-align: left;
-        }
-        
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            border-left: 4px solid #00FFFF;
-        }
-        
-        .result-label {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #B10DC9;
-        }
-        
-        .result-value {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 5px #0074D9;
-        }
-        
-        #speedometer {
-            display: none;
-            margin: 2rem auto;
-            border-radius: 50%;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        }
-        
-        .status {
-            font-size: 1.2rem;
-            margin: 1rem 0;
-            color: #00FFFF;
-            text-shadow: 0 0 5px #00FFFF;
-        }
-    </style>
+    <title>Pingora Speed Test</title>
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <meta property="og:title" content="Pingora Speed Test">
+    <meta property="og:description" content="Measure your connection against the edge.">
+    <meta property="og:image" content="https://pingora-eta.vercel.app/static/logo.png">
+    <meta property="og:url" content="https://pingora-eta.vercel.app">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Pingora Speed Test">
+    <meta name="twitter:description" content="Measure your connection against the edge.">
+    <meta name="twitter:image" content="https://pingora-eta.vercel.app/static/logo.png">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>CyberSpeed Test</h1>
-        <p>Measure your connection against the edge.</p>
+        <header>
+            <img src="/static/logo.png" alt="Pingora Logo" class="logo">
+            <h1>Pingora Speed Test</h1>
+            <p>Measure your connection against the edge.</p>
+        </header>
         
         <button id="startBtn">Start Test</button>
         
-        <div class="progress" id="progress">
-            <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-label" id="progressLabel">Initializing...</div>
+            <div class="progress" id="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
         
         <div class="status" id="status">Ready to test.</div>
         
         <canvas id="speedometer" width="300" height="300"></canvas>
         
+        <div class="phase-indicator" id="phaseIndicator">Latency Measurement</div>
+        
         <div class="results" id="results">
-            <div class="result-item">
-                <span class="result-label">Download:</span>
-                <span class="result-value" id="download">0 Mbps</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Upload:</span>
-                <span class="result-value" id="upload">0 Mbps</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Latency:</span>
-                <span class="result-value" id="latency">0 ms</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Jitter:</span>
-                <span class="result-value" id="jitter">0 ms</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Packet Loss:</span>
-                <span class="result-value" id="packetLoss">0%</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Download Loaded Latency:</span>
-                <span class="result-value" id="downLoaded">0 ms</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Upload Loaded Latency:</span>
-                <span class="result-value" id="upLoaded">0 ms</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Streaming Score:</span>
-                <span class="result-value" id="streaming">0</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Gaming Score:</span>
-                <span class="result-value" id="gaming">0</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">RTC Score:</span>
-                <span class="result-value" id="rtc">0</span>
+            <div class="metrics-grid">
+                <div class="metric-card download">
+                    <div class="metric-icon">↓</div>
+                    <div class="metric-label">Download</div>
+                    <div class="metric-value" id="download">0 Mbps</div>
+                </div>
+                <div class="metric-card upload">
+                    <div class="metric-icon">↑</div>
+                    <div class="metric-label">Upload</div>
+                    <div class="metric-value" id="upload">0 Mbps</div>
+                </div>
+                <div class="metric-card latency">
+                    <div class="metric-icon">⚡</div>
+                    <div class="metric-label">Latency</div>
+                    <div class="metric-value" id="latency">0 ms</div>
+                </div>
+                <div class="metric-card jitter">
+                    <div class="metric-icon">~</div>
+                    <div class="metric-label">Jitter</div>
+                    <div class="metric-value" id="jitter">0 ms</div>
+                </div>
+                <div class="metric-card packet-loss">
+                    <div class="metric-icon">📦</div>
+                    <div class="metric-label">Packet Loss</div>
+                    <div class="metric-value" id="packetLoss">0%</div>
+                </div>
+                <div class="metric-card down-loaded">
+                    <div class="metric-icon">↓⚡</div>
+                    <div class="metric-label">Download Loaded Latency</div>
+                    <div class="metric-value" id="downLoaded">0 ms</div>
+                </div>
+                <div class="metric-card up-loaded">
+                    <div class="metric-icon">↑⚡</div>
+                    <div class="metric-label">Upload Loaded Latency</div>
+                    <div class="metric-value" id="upLoaded">0 ms</div>
+                </div>
+                <div class="metric-card streaming">
+                    <div class="metric-icon">🎥</div>
+                    <div class="metric-label">Streaming Score</div>
+                    <div class="metric-value" id="streaming">0</div>
+                </div>
+                <div class="metric-card gaming">
+                    <div class="metric-icon">🎮</div>
+                    <div class="metric-label">Gaming Score</div>
+                    <div class="metric-value" id="gaming">0</div>
+                </div>
+                <div class="metric-card rtc">
+                    <div class="metric-icon">📞</div>
+                    <div class="metric-label">RTC Score</div>
+                    <div class="metric-value" id="rtc">0</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import SpeedTest from 'https://cdn.jsdelivr.net/npm/@cloudflare/speedtest@latest/index.js';
-
-        const startBtn = document.getElementById('startBtn');
-        const progress = document.getElementById('progress');
-        const progressBar = document.getElementById('progressBar');
-        const status = document.getElementById('status');
-        const resultsDiv = document.getElementById('results');
-        const canvas = document.getElementById('speedometer');
-        const ctx = canvas.getContext('2d');
-
-        let speedTest;
-        let currentSpeed = 0;
-        let targetSpeed = 0;
-        let animationId;
-
-        function drawSpeedometer() {
-            ctx.clearRect(0, 0, 300, 300);
-            
-            // Outer arc
-            ctx.beginPath();
-            ctx.arc(150, 150, 140, Math.PI * 0.75, Math.PI * 2.25);
-            const grad = ctx.createLinearGradient(0, 0, 300, 300);
-            grad.addColorStop(0, '#0074D9');
-            grad.addColorStop(1, '#B10DC9');
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 20;
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = '#00FFFF';
-            ctx.stroke();
-            
-            // Ticks
-            for (let i = 0; i <= 10; i++) {
-                const angle = Math.PI * 0.75 + (Math.PI * 1.5 / 10) * i;
-                const x1 = 150 + 120 * Math.cos(angle);
-                const y1 = 150 + 120 * Math.sin(angle);
-                const x2 = 150 + 140 * Math.cos(angle);
-                const y2 = 150 + 140 * Math.sin(angle);
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.shadowBlur = 5;
-                ctx.shadowColor = '#00FFFF';
-                ctx.stroke();
-            }
-            
-            // Labels (simple)
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '12px Orbitron';
-            ctx.shadowBlur = 0;
-            for (let i = 0; i <= 10; i += 2) {
-                const angle = Math.PI * 0.75 + (Math.PI * 1.5 / 10) * i;
-                const x = 150 + 100 * Math.cos(angle) - 10;
-                const y = 150 + 100 * Math.sin(angle) + 5;
-                ctx.fillText((i * 100).toString(), x, y);
-            }
-            
-            // Needle
-            const angle = Math.PI * 0.75 + (Math.PI * 1.5 * currentSpeed / 1000);
-            const nx = 150 + 120 * Math.cos(angle);
-            const ny = 150 + 120 * Math.sin(angle);
-            ctx.beginPath();
-            ctx.moveTo(150, 150);
-            ctx.lineTo(nx, ny);
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 4;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ffffff';
-            ctx.stroke();
-            
-            // Center
-            ctx.beginPath();
-            ctx.arc(150, 150, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#001f3f';
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(150, 150, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#00FFFF';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00FFFF';
-            ctx.fill();
-        }
-        
-        function animate() {
-            currentSpeed += (targetSpeed - currentSpeed) * 0.05;
-            drawSpeedometer();
-            animationId = requestAnimationFrame(animate);
-        }
-        
-        startBtn.addEventListener('click', () => {
-            if (animationId) cancelAnimationFrame(animationId);
-            startBtn.disabled = true;
-            startBtn.textContent = 'Testing...';
-            progress.style.display = 'block';
-            status.textContent = 'Initializing...';
-            resultsDiv.style.display = 'none';
-            canvas.style.display = 'block';
-            currentSpeed = 0;
-            targetSpeed = 0;
-            animate();
-            
-            speedTest = new SpeedTest({
-                autoStart: true
-            });
-            
-            speedTest.onRunningChange((running) => {
-                if (running) {
-                    status.textContent = 'Running speed test...';
-                } else {
-                    status.textContent = 'Test complete!';
-                }
-            });
-            
-            speedTest.onResultsChange((change) => {
-                const bw = speedTest.results.getDownloadBandwidth();
-                if (bw > 0) {
-                    targetSpeed = bw / 1000000; // Mbps
-                }
-                // Simulate progress
-                const progressVal = Math.min(100, (targetSpeed / 10) * 100); // Rough
-                progressBar.style.width = progressVal + '%';
-            });
-            
-            speedTest.onFinish((results) => {
-                displayResults(results);
-                targetSpeed = results.getSummary().download / 1000000;
-                startBtn.disabled = false;
-                startBtn.textContent = 'Retest';
-                progress.style.display = 'none';
-                progressBar.style.width = '0%';
-                resultsDiv.style.display = 'block';
-            });
-            
-            speedTest.onError((error) => {
-                status.textContent = `Error: ${error}`;
-                startBtn.disabled = false;
-                startBtn.textContent = 'Start Test';
-                progress.style.display = 'none';
-                canvas.style.display = 'none';
-                if (animationId) cancelAnimationFrame(animationId);
-            });
-        });
-        
-        function displayResults(results) {
-            const summary = results.getSummary();
-            document.getElementById('download').textContent = (summary.download / 1000000).toFixed(1) + ' Mbps';
-            document.getElementById('upload').textContent = (summary.upload / 1000000).toFixed(1) + ' Mbps';
-            document.getElementById('latency').textContent = summary.unloadedLatency.toFixed(0) + ' ms';
-            document.getElementById('jitter').textContent = summary.unloadedJitter.toFixed(0) + ' ms';
-            document.getElementById('packetLoss').textContent = (summary.packetLoss * 100).toFixed(1) + '%';
-            document.getElementById('downLoaded').textContent = results.getDownLoadedLatency().toFixed(0) + ' ms';
-            document.getElementById('upLoaded').textContent = results.getUpLoadedLatency().toFixed(0) + ' ms';
-            const scores = results.getScores();
-            document.getElementById('streaming').textContent = scores.streaming.toFixed(0);
-            document.getElementById('gaming').textContent = scores.gaming.toFixed(0);
-            document.getElementById('rtc').textContent = scores.rtc.toFixed(0);
-        }
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
