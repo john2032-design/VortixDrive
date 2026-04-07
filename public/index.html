@@ -25,17 +25,27 @@
       width: 100%;
     }
 
-    /* Header - slightly smaller on mobile */
+    /* ========== NEUMORPHIC COMPONENTS (shared) ========== */
+    .header, .toolbar, .stats, .url-group, .filter-btn, .clear-btn, .search-box {
+      background: #1e1e1e;
+      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
+    }
+    .filter-btn.active, .filter-btn:active, .clear-btn:active {
+      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
+    }
+    .stats, .search-box {
+      box-shadow: inset 2px 2px 5px #141414, inset -2px -2px 5px #282828;
+    }
+
+    /* Header */
     .header {
       display: flex;
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
       margin-bottom: 24px;
-      background: #1e1e1e;
       padding: 16px 24px;
       border-radius: 60px;
-      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
     }
     .header h1 {
       font-size: 1.7rem;
@@ -66,10 +76,8 @@
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 28px;
-      background: #1e1e1e;
       padding: 16px 24px;
       border-radius: 60px;
-      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
       align-items: center;
     }
     .filter-group {
@@ -78,7 +86,6 @@
       flex-wrap: wrap;
     }
     .filter-btn {
-      background: #1e1e1e;
       border: none;
       padding: 8px 20px;
       border-radius: 40px;
@@ -86,69 +93,45 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.1s ease;
-      box-shadow: 4px 4px 8px #141414, -4px -4px 8px #282828;
       font-size: 0.85rem;
     }
     .filter-btn.active {
       background: #2a2a32;
-      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
       color: #4ade80;
     }
-    .filter-btn:active {
-      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
-      transform: translateY(1px);
-    }
     .search-box {
-      background: #1e1e1e;
       border: none;
       padding: 10px 20px;
       border-radius: 40px;
       color: #e0e0e0;
       width: 260px;
       font-size: 0.85rem;
-      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
       outline: none;
     }
-    .search-box:focus {
-      box-shadow: inset 4px 4px 12px #141414, inset -4px -4px 12px #282828;
-    }
     .clear-btn {
-      background: #1e1e1e;
       border: none;
       padding: 8px 24px;
       border-radius: 40px;
       color: #ef4444;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 4px 4px 8px #141414, -4px -4px 8px #282828;
       margin-left: auto;
       font-size: 0.85rem;
-      transition: 0.1s;
     }
-    .clear-btn:active {
-      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
-      transform: translateY(1px);
-    }
-
-    /* Stats */
     .stats {
-      background: #1e1e1e;
       padding: 12px 20px;
       border-radius: 40px;
       margin-bottom: 24px;
       font-size: 0.85rem;
       font-weight: 500;
       display: inline-block;
-      box-shadow: inset 2px 2px 5px #141414, inset -2px -2px 5px #282828;
     }
 
-    /* URL Group Card */
+    /* URL Group */
     .url-group {
-      background: #1e1e1e;
       border-radius: 28px;
       margin-bottom: 20px;
       overflow: hidden;
-      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
     }
     .url-header {
       background: #1e1e1e;
@@ -180,10 +163,10 @@
     }
     .chevron {
       font-size: 1rem;
-      transition: transform 0.2s ease;
       display: inline-block;
       width: 20px;
       text-align: center;
+      transition: transform 0.2s;
     }
     .url-count {
       background: #2a2a32;
@@ -202,7 +185,8 @@
     .log-list.open {
       display: flex;
     }
-    /* Log entry - compact base */
+
+    /* ========== DESKTOP LAYOUT (default) ========== */
     .log-entry {
       padding: 14px 24px;
       border-bottom: 1px solid #2a2a32;
@@ -231,8 +215,6 @@
       flex: 1;
       min-width: 0;
       word-break: break-word;
-      white-space: normal;
-      overflow-wrap: break-word;
     }
     .log-message {
       font-weight: 500;
@@ -245,7 +227,6 @@
       font-size: 0.7rem;
       margin-top: 4px;
       word-break: break-all;
-      white-space: pre-wrap;
     }
     .log-time {
       color: #6b7280;
@@ -255,36 +236,35 @@
       font-family: monospace;
     }
 
-    /* 📱 Mobile – much smaller, compact */
+    /* ========== MOBILE LAYOUT (different structure) ========== */
     @media (max-width: 700px) {
       body {
-        padding: 10px;
+        padding: 12px;
       }
       .header {
-        padding: 10px 16px;
+        padding: 12px 16px;
         margin-bottom: 16px;
+        border-radius: 40px;
       }
       .header h1 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
       }
       .header-icon {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
       }
       .badge {
         font-size: 0.65rem;
-        padding: 4px 10px;
       }
       .toolbar {
         flex-direction: column;
         align-items: stretch;
-        padding: 12px;
-        gap: 10px;
-        margin-bottom: 20px;
+        padding: 14px;
+        gap: 12px;
+        border-radius: 40px;
       }
       .filter-group {
         justify-content: center;
-        gap: 8px;
       }
       .filter-btn {
         padding: 6px 14px;
@@ -292,24 +272,21 @@
       }
       .search-box {
         width: 100%;
-        padding: 8px 16px;
         font-size: 0.75rem;
       }
       .clear-btn {
         margin-left: 0;
         text-align: center;
-        padding: 8px 16px;
-        font-size: 0.75rem;
       }
       .stats {
         font-size: 0.7rem;
-        padding: 8px 14px;
-        margin-bottom: 16px;
         width: 100%;
         text-align: center;
+        padding: 8px 12px;
       }
+      /* Mobile: each log entry as a card-like block */
       .url-header {
-        padding: 10px 16px;
+        padding: 12px 16px;
         flex-wrap: wrap;
       }
       .url-text {
@@ -321,18 +298,15 @@
         font-size: 0.8rem;
         width: 16px;
       }
-      .url-count {
-        font-size: 0.6rem;
-        padding: 3px 8px;
-      }
       .log-entry {
-        padding: 10px 16px;
-        gap: 8px;
         flex-direction: column;
+        padding: 12px 16px;
+        gap: 6px;
       }
       .log-level {
         width: auto;
         font-size: 0.7rem;
+        margin-bottom: 4px;
       }
       .log-message {
         font-size: 0.75rem;
@@ -342,8 +316,9 @@
       }
       .log-time {
         white-space: normal;
-        text-align: left;
         font-size: 0.65rem;
+        text-align: left;
+        margin-top: 4px;
       }
     }
 
@@ -434,6 +409,21 @@
     statsDiv.innerText = `📊 ${filtered.length} logs shown (${allLogs.length} total) · ${groups.size} unique URLs`;
 
     const container = document.getElementById('logGroupsContainer');
+    // Preserve open/closed states if re-rendering
+    const openStates = new Map();
+    const existingGroups = container.querySelectorAll('.url-group');
+    existingGroups.forEach(group => {
+      const header = group.querySelector('.url-header');
+      const urlTextSpan = header?.querySelector('.url-text span:last-child');
+      if (urlTextSpan) {
+        const url = urlTextSpan.textContent;
+        const logList = group.querySelector('.log-list');
+        if (logList && logList.classList.contains('open')) {
+          openStates.set(url, true);
+        }
+      }
+    });
+
     container.innerHTML = '';
 
     for (const [url, logsArray] of groups.entries()) {
@@ -448,7 +438,7 @@
       
       const chevron = document.createElement('span');
       chevron.className = 'chevron';
-      chevron.textContent = '▶';  // all start closed
+      chevron.textContent = '▶';
       
       const urlTextSpan = document.createElement('span');
       urlTextSpan.textContent = escapeHtml(url);
@@ -467,7 +457,13 @@
       
       const logList = document.createElement('div');
       logList.className = 'log-list';
-      // do NOT add 'open' class – all closed by default
+      
+      // restore open state if it existed
+      const wasOpen = openStates.get(url);
+      if (wasOpen) {
+        logList.classList.add('open');
+        chevron.textContent = '▼';
+      }
 
       for (const log of logsArray) {
         const entry = document.createElement('div');
@@ -483,8 +479,9 @@
         logList.appendChild(entry);
       }
 
-      // Toggle on header click
+      // Toggle without any page jump
       header.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         if (logList.classList.contains('open')) {
           logList.classList.remove('open');
@@ -499,7 +496,6 @@
       groupDiv.appendChild(logList);
       container.appendChild(groupDiv);
     }
-    // No auto-open – user must click to see logs
   }
 
   function escapeHtml(str) {
