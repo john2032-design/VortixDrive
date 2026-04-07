@@ -2,82 +2,346 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>VortixWorld Log Console</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0f0f12;
+    * {
       margin: 0;
-      padding: 20px;
-      color: #e2e2e6;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .container { max-width: 1400px; margin: 0 auto; }
-    h1 { display: flex; align-items: center; gap: 12px; font-weight: 600; margin-top: 0; }
-    .badge { background: #2a2a32; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; }
+
+    body {
+      background: #1e1e1e;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      background: #1e1e1e;
+      padding: 16px 24px;
+      border-radius: 60px;
+      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
+    }
+    .header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 4px 4px 8px #141414, -4px -4px 8px #282828;
+    }
+    .badge {
+      background: #2a2a32;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      box-shadow: inset 1px 1px 2px #141414, inset -1px -1px 2px #282828;
+    }
+
+    /* Toolbar */
     .toolbar {
-      display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0;
-      background: #1a1a22; padding: 12px 20px; border-radius: 60px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      background: #1e1e1e;
+      padding: 16px 24px;
+      border-radius: 60px;
+      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
       align-items: center;
     }
-    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
     .filter-btn {
-      background: #2a2a32; border: none; padding: 6px 16px;
-      border-radius: 40px; color: #ccc; cursor: pointer; font-weight: 500;
-      transition: 0.1s;
-    }
-    .filter-btn.active { background: #3b82f6; color: white; }
-    .search-box {
-      background: #1a1a22; border: 1px solid #2a2a32; padding: 8px 16px;
-      border-radius: 40px; color: white; width: 260px;
-    }
-    button.clear-btn {
-      background: #dc2626; border: none; padding: 6px 18px;
-      border-radius: 40px; color: white; font-weight: bold; cursor: pointer;
-      margin-left: auto;
-    }
-    .stats { font-size: 0.85rem; color: #a0a0aa; margin-bottom: 20px; }
-    .url-group {
-      background: #14141a; border-radius: 20px; margin-bottom: 16px;
-      overflow: hidden; border: 1px solid #26262e;
-    }
-    .url-header {
-      background: #1c1c24; padding: 12px 20px; cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center;
-      font-weight: 600; font-family: monospace; font-size: 0.9rem;
-      border-bottom: 1px solid #2a2a32;
-    }
-    .url-header:hover { background: #22222c; }
-    .url-count { background: #3b82f6; padding: 2px 10px; border-radius: 30px; font-size: 0.7rem; }
-    .log-list { display: none; flex-direction: column; }
-    .log-list.open { display: flex; }
-    .log-entry {
-      padding: 12px 20px; border-bottom: 1px solid #22222a;
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;
+      background: #1e1e1e;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: #e0e0e0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      box-shadow: 4px 4px 8px #141414, -4px -4px 8px #282828;
       font-size: 0.85rem;
     }
+    .filter-btn.active {
+      background: #2a2a32;
+      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
+      color: #4ade80;
+    }
+    .filter-btn:active {
+      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
+      transform: translateY(1px);
+    }
+    .search-box {
+      background: #1e1e1e;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      color: #e0e0e0;
+      width: 260px;
+      font-size: 0.85rem;
+      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
+      outline: none;
+    }
+    .search-box:focus {
+      box-shadow: inset 4px 4px 12px #141414, inset -4px -4px 12px #282828;
+    }
+    .clear-btn {
+      background: #1e1e1e;
+      border: none;
+      padding: 8px 24px;
+      border-radius: 40px;
+      color: #ef4444;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 4px 4px 8px #141414, -4px -4px 8px #282828;
+      margin-left: auto;
+      font-size: 0.85rem;
+      transition: 0.1s;
+    }
+    .clear-btn:active {
+      box-shadow: inset 4px 4px 8px #141414, inset -4px -4px 8px #282828;
+      transform: translateY(1px);
+    }
+
+    /* Stats */
+    .stats {
+      background: #1e1e1e;
+      padding: 12px 20px;
+      border-radius: 40px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-block;
+      box-shadow: inset 2px 2px 5px #141414, inset -2px -2px 5px #282828;
+    }
+
+    /* URL Group Card */
+    .url-group {
+      background: #1e1e1e;
+      border-radius: 28px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 8px 8px 16px #141414, -8px -8px 16px #282828;
+    }
+    .url-header {
+      background: #1e1e1e;
+      padding: 16px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #2a2a32;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .url-header:hover {
+      background: #26262e;
+    }
+    .url-text {
+      flex: 1;
+      word-break: break-all;
+      white-space: normal;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .chevron {
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+      display: inline-block;
+      width: 20px;
+      text-align: center;
+    }
+    .chevron.open {
+      transform: rotate(180deg);
+    }
+    .url-count {
+      background: #2a2a32;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: inset 1px 1px 2px #141414, inset -1px -1px 2px #282828;
+    }
+    .log-list {
+      display: none;
+      flex-direction: column;
+      background: #1e1e1e;
+    }
+    .log-list.open {
+      display: flex;
+    }
+    /* Log entry */
+    .log-entry {
+      padding: 16px 24px;
+      border-bottom: 1px solid #2a2a32;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+      font-size: 0.85rem;
+      transition: background 0.1s;
+    }
+    .log-entry:hover {
+      background: #25252d;
+    }
     .log-level {
-      width: 90px; font-weight: 700; text-transform: uppercase;
+      width: 100px;
+      font-weight: 800;
+      text-transform: uppercase;
+      flex-shrink: 0;
     }
     .log-level.info { color: #22c55e; }
     .log-level.warn { color: #f59e0b; }
     .log-level.error { color: #ef4444; }
     .log-level.websocket { color: #a855f7; }
-    .log-message { flex: 3; word-break: break-word; }
-    .log-data { color: #9ca3af; font-family: monospace; font-size: 0.75rem; margin-top: 4px; }
-    .log-time { color: #6b7280; font-size: 0.7rem; min-width: 160px; text-align: right; }
+    .log-content {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+      white-space: normal;
+      overflow-wrap: break-word;
+    }
+    .log-message {
+      font-weight: 500;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-data {
+      color: #9ca3af;
+      font-family: monospace;
+      font-size: 0.75rem;
+      margin-top: 6px;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    .log-time {
+      color: #6b7280;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: monospace;
+    }
+
+    /* Mobile */
     @media (max-width: 700px) {
-      .log-entry { flex-direction: column; }
-      .log-time { text-align: left; }
-      .toolbar { flex-direction: column; align-items: stretch; }
-      .clear-btn { margin-left: 0; }
+      body {
+        padding: 12px;
+      }
+      .header {
+        padding: 12px 16px;
+      }
+      .header h1 {
+        font-size: 1.2rem;
+      }
+      .header-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 12px;
+      }
+      .filter-group {
+        justify-content: center;
+      }
+      .clear-btn {
+        margin-left: 0;
+        text-align: center;
+      }
+      .search-box {
+        width: 100%;
+      }
+      .url-header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+      }
+      .url-text {
+        font-size: 0.75rem;
+        width: 100%;
+      }
+      .log-entry {
+        flex-direction: column;
+        padding: 14px 16px;
+        gap: 8px;
+      }
+      .log-level {
+        width: auto;
+      }
+      .log-time {
+        white-space: normal;
+        text-align: left;
+      }
+      .stats {
+        font-size: 0.75rem;
+        width: 100%;
+        text-align: center;
+      }
+      .chevron {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #141414;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3a3a44;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>📡 VortixWorld Log Console <span class="badge">live from userscript</span></h1>
+  <div class="header">
+    <h1>
+      <img src="https://i.ibb.co/LdshK1fR/461-F6268-08-F3-4-E8A-BC73-409218-A3-F168.jpg" class="header-icon" alt="VW Icon">
+      VortixWorld Log Console
+    </h1>
+    <span class="badge">live from userscript</span>
+  </div>
+
   <div class="toolbar">
     <div class="filter-group">
       <button data-level="all" class="filter-btn active">All</button>
@@ -86,10 +350,11 @@
       <button data-level="error" class="filter-btn">Error</button>
       <button data-level="websocket" class="filter-btn">WebSocket</button>
     </div>
-    <input type="text" id="searchInput" class="search-box" placeholder="Search in messages...">
+    <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search in messages...">
     <button id="clearLogsBtn" class="clear-btn">🗑️ Clear all logs</button>
   </div>
-  <div class="stats" id="stats"></div>
+
+  <div class="stats" id="stats">📊 Loading logs...</div>
   <div id="logGroupsContainer"></div>
 </div>
 
@@ -103,7 +368,10 @@
       const res = await fetch('/api/logs');
       allLogs = await res.json();
       render();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      document.getElementById('stats').innerText = '⚠️ Failed to fetch logs';
+    }
   }
 
   async function clearLogs() {
@@ -119,9 +387,13 @@
     }
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
-      filtered = filtered.filter(log => log.message.toLowerCase().includes(q) || (log.data && String(log.data).toLowerCase().includes(q)));
+      filtered = filtered.filter(log => 
+        log.message.toLowerCase().includes(q) || 
+        (log.data && String(log.data).toLowerCase().includes(q))
+      );
     }
 
+    // group by pageUrl
     const groups = new Map();
     for (const log of filtered) {
       const url = log.pageUrl || 'unknown';
@@ -129,8 +401,8 @@
       groups.get(url).push(log);
     }
 
-    const stats = document.getElementById('stats');
-    stats.innerText = `📊 ${filtered.length} logs shown (${allLogs.length} total) · ${groups.size} unique URLs`;
+    const statsDiv = document.getElementById('stats');
+    statsDiv.innerText = `📊 ${filtered.length} logs shown (${allLogs.length} total) · ${groups.size} unique URLs`;
 
     const container = document.getElementById('logGroupsContainer');
     container.innerHTML = '';
@@ -138,20 +410,42 @@
     for (const [url, logsArray] of groups.entries()) {
       const groupDiv = document.createElement('div');
       groupDiv.className = 'url-group';
+
       const header = document.createElement('div');
       header.className = 'url-header';
-      header.innerHTML = `
-        <span>🔗 ${escapeHtml(url)}</span>
-        <span class="url-count">${logsArray.length} logs</span>
-      `;
+      
+      const urlSpan = document.createElement('span');
+      urlSpan.className = 'url-text';
+      
+      const chevron = document.createElement('span');
+      chevron.className = 'chevron';
+      chevron.textContent = '▼';
+      
+      const urlTextSpan = document.createElement('span');
+      urlTextSpan.textContent = escapeHtml(url);
+      urlTextSpan.style.flex = '1';
+      urlTextSpan.style.wordBreak = 'break-all';
+      
+      urlSpan.appendChild(chevron);
+      urlSpan.appendChild(urlTextSpan);
+      
+      const countSpan = document.createElement('span');
+      countSpan.className = 'url-count';
+      countSpan.textContent = `${logsArray.length} logs`;
+      
+      header.appendChild(urlSpan);
+      header.appendChild(countSpan);
+      
       const logList = document.createElement('div');
       logList.className = 'log-list';
+      let isOpen = false; // start closed, but will auto-open if only one group later
+
       for (const log of logsArray) {
         const entry = document.createElement('div');
         entry.className = 'log-entry';
         entry.innerHTML = `
           <div class="log-level ${log.level}">${log.level.toUpperCase()}</div>
-          <div style="flex:1">
+          <div class="log-content">
             <div class="log-message">${escapeHtml(log.message)}</div>
             ${log.data ? `<div class="log-data">📎 ${escapeHtml(String(log.data))}</div>` : ''}
           </div>
@@ -159,17 +453,38 @@
         `;
         logList.appendChild(entry);
       }
-      header.onclick = () => {
-        logList.classList.toggle('open');
-      };
+
+      // Toggle on header click
+      header.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (logList.classList.contains('open')) {
+          logList.classList.remove('open');
+          chevron.textContent = '▶';
+          chevron.classList.remove('open');
+        } else {
+          logList.classList.add('open');
+          chevron.textContent = '▼';
+          chevron.classList.add('open');
+        }
+      });
+
       groupDiv.appendChild(header);
       groupDiv.appendChild(logList);
       container.appendChild(groupDiv);
     }
 
+    // Auto-open first group if only one (optional)
     if (groups.size === 1 && container.firstChild) {
-      const firstList = container.firstChild.querySelector('.log-list');
-      if (firstList) firstList.classList.add('open');
+      const firstGroup = container.firstChild;
+      const firstLogList = firstGroup.querySelector('.log-list');
+      const firstChevron = firstGroup.querySelector('.chevron');
+      if (firstLogList && !firstLogList.classList.contains('open')) {
+        firstLogList.classList.add('open');
+        if (firstChevron) {
+          firstChevron.textContent = '▼';
+          firstChevron.classList.add('open');
+        }
+      }
     }
   }
 
@@ -182,6 +497,7 @@
     });
   }
 
+  // Event listeners
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
