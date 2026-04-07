@@ -1,0 +1,82 @@
+/* Mobile-specific styles */
+body {
+  padding: 12px;
+}
+
+.header {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 40px;
+}
+.header h1 {
+  font-size: 1.2rem;
+}
+.header-icon {
+  width: 32px;
+  height: 32px;
+}
+.badge {
+  font-size: 0.65rem;
+}
+.toolbar {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 14px;
+  gap: 12px;
+  border-radius: 40px;
+}
+.filter-group {
+  justify-content: center;
+}
+.filter-btn {
+  padding: 6px 14px;
+  font-size: 0.7rem;
+}
+.search-box {
+  width: 100%;
+  font-size: 0.75rem;
+}
+.refresh-btn, .clear-btn {
+  text-align: center;
+}
+.stats {
+  font-size: 0.7rem;
+  width: 100%;
+  text-align: center;
+  padding: 8px 12px;
+}
+.url-header {
+  padding: 12px 16px;
+  flex-wrap: wrap;
+}
+.url-text {
+  font-size: 0.7rem;
+  width: 100%;
+  gap: 8px;
+}
+.chevron {
+  font-size: 0.8rem;
+  width: 16px;
+}
+.log-entry {
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 6px;
+}
+.log-level {
+  width: auto;
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+.log-message {
+  font-size: 0.75rem;
+}
+.log-data {
+  font-size: 0.65rem;
+}
+.log-time {
+  white-space: normal;
+  font-size: 0.65rem;
+  text-align: left;
+  margin-top: 4px;
+}
