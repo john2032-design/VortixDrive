@@ -1,0 +1,53 @@
+/* Desktop-specific styles */
+body {
+  padding: 20px;
+}
+
+.log-entry {
+  padding: 14px 24px;
+  border-bottom: 1px solid #2a2a32;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  transition: background 0.1s;
+}
+.log-entry:hover {
+  background: #25252d;
+}
+.log-level {
+  width: 90px;
+  font-weight: 800;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+.log-level.info { color: #22c55e; }
+.log-level.warn { color: #f59e0b; }
+.log-level.error { color: #ef4444; }
+.log-level.websocket { color: #a855f7; }
+.log-content {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+.log-message {
+  font-weight: 500;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.log-data {
+  color: #9ca3af;
+  font-family: monospace;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  word-break: break-all;
+}
+.log-time {
+  color: #6b7280;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: monospace;
+}
