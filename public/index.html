@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VortixWorld Log Console</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0f0f12;
+      margin: 0;
+      padding: 20px;
+      color: #e2e2e6;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    h1 { display: flex; align-items: center; gap: 12px; font-weight: 600; margin-top: 0; }
+    .badge { background: #2a2a32; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; }
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0;
+      background: #1a1a22; padding: 12px 20px; border-radius: 60px;
+      align-items: center;
+    }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      background: #2a2a32; border: none; padding: 6px 16px;
+      border-radius: 40px; color: #ccc; cursor: pointer; font-weight: 500;
+      transition: 0.1s;
+    }
+    .filter-btn.active { background: #3b82f6; color: white; }
+    .search-box {
+      background: #1a1a22; border: 1px solid #2a2a32; padding: 8px 16px;
+      border-radius: 40px; color: white; width: 260px;
+    }
+    button.clear-btn {
+      background: #dc2626; border: none; padding: 6px 18px;
+      border-radius: 40px; color: white; font-weight: bold; cursor: pointer;
+      margin-left: auto;
+    }
+    .stats { font-size: 0.85rem; color: #a0a0aa; margin-bottom: 20px; }
+    .url-group {
+      background: #14141a; border-radius: 20px; margin-bottom: 16px;
+      overflow: hidden; border: 1px solid #26262e;
+    }
+    .url-header {
+      background: #1c1c24; padding: 12px 20px; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 600; font-family: monospace; font-size: 0.9rem;
+      border-bottom: 1px solid #2a2a32;
+    }
+    .url-header:hover { background: #22222c; }
+    .url-count { background: #3b82f6; padding: 2px 10px; border-radius: 30px; font-size: 0.7rem; }
+    .log-list { display: none; flex-direction: column; }
+    .log-list.open { display: flex; }
+    .log-entry {
+      padding: 12px 20px; border-bottom: 1px solid #22222a;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;
+      font-size: 0.85rem;
+    }
+    .log-level {
+      width: 90px; font-weight: 700; text-transform: uppercase;
+    }
+    .log-level.info { color: #22c55e; }
+    .log-level.warn { color: #f59e0b; }
+    .log-level.error { color: #ef4444; }
+    .log-level.websocket { color: #a855f7; }
+    .log-message { flex: 3; word-break: break-word; }
+    .log-data { color: #9ca3af; font-family: monospace; font-size: 0.75rem; margin-top: 4px; }
+    .log-time { color: #6b7280; font-size: 0.7rem; min-width: 160px; text-align: right; }
+    @media (max-width: 700px) {
+      .log-entry { flex-direction: column; }
+      .log-time { text-align: left; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .clear-btn { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📡 VortixWorld Log Console <span class="badge">live from userscript</span></h1>
+  <div class="toolbar">
+    <div class="filter-group">
+      <button data-level="all" class="filter-btn active">All</button>
+      <button data-level="info" class="filter-btn">Info</button>
+      <button data-level="warn" class="filter-btn">Warn</button>
+      <button data-level="error" class="filter-btn">Error</button>
+      <button data-level="websocket" class="filter-btn">WebSocket</button>
+    </div>
+    <input type="text" id="searchInput" class="search-box" placeholder="Search in messages...">
+    <button id="clearLogsBtn" class="clear-btn">🗑️ Clear all logs</button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div id="logGroupsContainer"></div>
+</div>
+
+<script>
+  let allLogs = [];
+  let currentFilter = 'all';
+  let searchQuery = '';
+
+  async function fetchLogs() {
+    try {
+      const res = await fetch('/api/logs');
+      allLogs = await res.json();
+      render();
+    } catch (err) { console.error(err); }
+  }
+
+  async function clearLogs() {
+    if (!confirm('Delete all logs from server?')) return;
+    await fetch('/api/logs', { method: 'DELETE' });
+    fetchLogs();
+  }
+
+  function render() {
+    let filtered = allLogs;
+    if (currentFilter !== 'all') {
+      filtered = filtered.filter(log => log.level === currentFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      filtered = filtered.filter(log => log.message.toLowerCase().includes(q) || (log.data && String(log.data).toLowerCase().includes(q)));
+    }
+
+    const groups = new Map();
+    for (const log of filtered) {
+      const url = log.pageUrl || 'unknown';
+      if (!groups.has(url)) groups.set(url, []);
+      groups.get(url).push(log);
+    }
+
+    const stats = document.getElementById('stats');
+    stats.innerText = `📊 ${filtered.length} logs shown (${allLogs.length} total) · ${groups.size} unique URLs`;
+
+    const container = document.getElementById('logGroupsContainer');
+    container.innerHTML = '';
+
+    for (const [url, logsArray] of groups.entries()) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'url-group';
+      const header = document.createElement('div');
+      header.className = 'url-header';
+      header.innerHTML = `
+        <span>🔗 ${escapeHtml(url)}</span>
+        <span class="url-count">${logsArray.length} logs</span>
+      `;
+      const logList = document.createElement('div');
+      logList.className = 'log-list';
+      for (const log of logsArray) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+          <div class="log-level ${log.level}">${log.level.toUpperCase()}</div>
+          <div style="flex:1">
+            <div class="log-message">${escapeHtml(log.message)}</div>
+            ${log.data ? `<div class="log-data">📎 ${escapeHtml(String(log.data))}</div>` : ''}
+          </div>
+          <div class="log-time">🕒 ${new Date(log.timestamp).toLocaleString()}</div>
+        `;
+        logList.appendChild(entry);
+      }
+      header.onclick = () => {
+        logList.classList.toggle('open');
+      };
+      groupDiv.appendChild(header);
+      groupDiv.appendChild(logList);
+      container.appendChild(groupDiv);
+    }
+
+    if (groups.size === 1 && container.firstChild) {
+      const firstList = container.firstChild.querySelector('.log-list');
+      if (firstList) firstList.classList.add('open');
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-level');
+      render();
+    });
+  });
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    render();
+  });
+  document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
+
+  fetchLogs();
+  setInterval(fetchLogs, 3000);
+</script>
+</body>
+</html>
